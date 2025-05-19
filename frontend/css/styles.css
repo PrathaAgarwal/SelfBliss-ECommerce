@@ -1,0 +1,212 @@
+html body{
+    background: rgb(180, 216, 231);
+    position: relative;
+}
+h1 , h2 ,h3, h4{
+    font-family: "Dancing Script", serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+span{
+    font-family: "Macondo", serif;
+    font-weight: 400;
+    font-style: normal;
+    color: 	rgb(3, 72, 82);
+}
+.nav-link{
+    color: rgb(3, 72, 82)  !important;
+    border: 1px solid #000000; 
+    transition: all 0.3s ease;
+    margin-right: 5px;
+}
+.active{
+    color: white !important;
+    background-color: rgb(3, 72, 82) !important;
+    border-bottom: 3px solid rgb(255, 255, 255);
+    border-radius: 0 !important;
+}
+.nav-link:hover{
+    border-bottom: 3px solid rgb(3, 72, 82);
+    border-radius: 0 !important;
+}
+.slideshow{
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+    height: auto;
+}
+.slide{
+    position: absolute;
+    opacity:0;
+    width:100%;
+    object-fit: cover; 
+}
+.slidetext{
+    position: absolute;
+    top:80%;
+    left:10%;
+    -webkit-text-stroke: 2px white;
+    color: transparent;
+}
+.slide:first-child{
+    opacity: 1;
+}
+
+.special{
+    height: 370px;
+    width:335px !important;
+    border:2px solid rgba(0, 0, 0, 0.026);
+    background-color:rgba(0, 0, 0, 0.026) ;
+    border-radius: 5%;
+    margin-right: 10px;
+    overflow: hidden;
+    z-index: 1 !important;
+    transition: transform 0.3s ease;
+}
+#featured-3 {
+    margin-top: 550px; /* Default margin */
+    position: relative; 
+    z-index: 1; /* Ensures it stays above background elements */
+}
+
+/* Adjust for medium screens */
+@media (max-width: 1024px) {
+    #featured-3 {
+        margin-top: 450px;
+    }
+}
+
+@media (max-width: 768px) {
+    #featured-3 {
+        margin-top: 350px;
+    }
+}
+
+@media (max-width: 480px) {
+    #featured-3 {
+        margin-top: 250px;
+    }
+}
+.special:hover{
+    transform: scale(1.1);
+    z-index:2;
+}
+.back{
+    position: relative;
+    bottom: 0;
+    left:0;
+    opacity: 0;
+    z-index: 0;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    transform: translateY(100%);
+}
+.special:hover .front{
+    opacity:0;
+    transform: translateY(-100%);
+}
+.special:hover .back{
+    opacity:1;
+    transform: translateY(0);
+}
+.pro:hover .front{
+    opacity:0;
+    transform: translateY(-100%);
+}
+.pro:hover .back{
+    opacity:1;
+    transform: translateY(0);
+}
+
+button{
+    background-color: white;
+    color:rgb(3, 72, 82);
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+button:hover{
+    background-color: rgb(3, 72, 82);
+    color:white;
+}
+.feature{
+    height: 255px;
+    width:250px !important;
+    border:2px solid black;
+    justify-content: center !important;
+    align-items: center !important;
+    border-radius: 5%;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+#featured-4{
+    position: absolute;
+    top:110%;
+    left:40%;
+
+}
+.SB{
+    color: rgb(3, 72, 82);
+}
+.feat-icon{
+    margin-top: 0px;
+}
+.feature-icon{
+    left: 40px;
+    margin-top: 20px;
+    position: relative;
+}
+.pro{
+    text-align: center;
+}
+
+.feature-icon svg{
+    color: rgb(3, 72, 82);
+    position: absolute;
+  opacity: 0;
+    transition: opacity 2s ease, transform 2s ease;
+}
+.tople{
+    top:-15px;
+    left:-8px;
+}
+.topri{
+    top:-15px;
+    right:-8px;
+}
+.bottomle{
+    bottom:-15px;
+    left:-8px;
+}
+.bottomri{
+    bottom:-15px;
+    right:-8px;
+}
+.feature-icon:hover svg {
+    opacity: 1;
+    transform: rotate(360deg); 
+  }
+.p:hover{
+    opacity:0.8;
+}
+li{
+    list-style: none;
+}
+.login-form{
+    border:2px solid black;
+    margin-right: 0.5px;
+    width: 350px !important;
+    
+}
+.register-form{
+    border:2px solid black;
+    margin-right: 0.5px;
+    width: 350px !important;
+}
+.front{
+    z-index: 1;
+    background-size: cover;
+    background-position: center;
+    width: 250px;
+    position: absolute;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
