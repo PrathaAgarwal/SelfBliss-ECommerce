@@ -14,7 +14,7 @@ import cors from 'cors';
 const app = express();
 
 app.use(cors({
-  origin: 'https://selfbliss--1.onrender.com', // your frontend domain
+  origin: 'https://selfbliss-3.onrender.com', // your frontend domain
   credentials: true
 }));
 const port = 3000;
