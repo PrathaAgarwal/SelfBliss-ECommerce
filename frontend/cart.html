@@ -38,7 +38,7 @@
   </div></div>
   <script> 
   document.addEventListener('DOMContentLoaded', () => {
-    fetch("https://selfbliss--4.onrender.com/allcart")
+    fetch("https://selfbliss--6.onrender.com/allcart")
      .then(response => response.json()) 
     .then(response=>{
       const cartItems=response.cart;
@@ -106,7 +106,7 @@
     });
    async function removeProduct(productId) {
   try {
-    const response = await fetch(`https://selfbliss--4.onrender.com/cart/${productId}`, {
+    const response = await fetch(`https://selfbliss--6.onrender.com/cart/${productId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
@@ -134,7 +134,7 @@
 async function addToWishlist(proId) {
   
   try {
-    const response = await fetch("https://selfbliss--4.onrender.com/wishlist", {
+    const response = await fetch("https://selfbliss--6.onrender.com/wishlist", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -166,7 +166,7 @@ if (response.status===401){
 async function plusCart(proId) {
  
  try {
-   const response = await fetch("https://selfbliss--4.onrender.com/cart", {
+   const response = await fetch("https://selfbliss--6.onrender.com/cart", {
      method: "POST",
      headers: {
        "Content-Type": "application/json",
@@ -199,7 +199,7 @@ async function plusCart(proId) {
  
   async function minusCart(proId){
   try{
-  const response = await fetch(`https://selfbliss--4.onrender.com/minuscart/${proId}`, {
+  const response = await fetch(`https://selfbliss--6.onrender.com/minuscart/${proId}`, {
   method: 'delete'
 });
 const data = await response.json();

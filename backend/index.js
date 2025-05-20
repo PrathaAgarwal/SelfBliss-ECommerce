@@ -8,7 +8,7 @@ import { Strategy } from "passport-local";
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, get,push,set,child,update,remove } from "firebase/database";
 import { fileURLToPath } from 'url';
-import { dirname, join,path } from 'path';  
+import path , { dirname, join } from 'path';  
 import cors from 'cors';
 
 const app = express();
