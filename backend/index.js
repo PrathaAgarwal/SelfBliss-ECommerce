@@ -8,13 +8,13 @@ import { Strategy } from "passport-local";
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, get,push,set,child,update,remove } from "firebase/database";
 import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';  
+import { dirname, join,path } from 'path';  
 import cors from 'cors';
 
 const app = express();
 
 app.use(cors({
-  origin: 'https://selfbliss-3.onrender.com', // your frontend domain
+  origin: 'https://selfbliss--5.onrender.com', // your frontend domain
   credentials: true
 }));
 const port = 3000;
@@ -44,27 +44,29 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.get("/", (req, res) => {
-  res.sendFile("/web dev/mine/SelfBliss/frontend/index.html");
+  res.sendFile(join(__dirname, "../frontend", "index.html"));
 });
 app.get("/login", (req, res) => {
-  res.sendFile("/web dev/mine/SelfBliss/frontend/login.html");
+  res.sendFile(join(__dirname, "../frontend", "login.html"));
 });
 app.get("/categories", (req, res) => {
-  res.sendFile("/web dev/mine/SelfBliss/frontend/categories.html");
+  res.sendFile(join(__dirname, "../frontend", "categories.html"));
 });
 app.get("/wishlist", (req, res) => {
-  if (!req.isAuthenticated()) {
-    console.log("User not authenticated, redirecting...");
-    res.redirect("/login");
+  console.log("Wishlist route hit");
+  if (!req.isAuthenticated || !req.isAuthenticated()) {
+    console.log("User not authenticated — redirecting to /login");
+    return res.redirect("/login");
   }
-  res.sendFile("/web dev/mine/SelfBliss/frontend/wishlist.html");
+  console.log("User authenticated — sending wishlist.html");
+  res.sendFile(join(__dirname, "../frontend", "wishlist.html"));
 });
 app.get("/cart", (req, res) => {
   if (!req.isAuthenticated()) {
     console.log("User not authenticated, redirecting...");
     return res.redirect("/login");
   }
-  res.sendFile("/web dev/mine/SelfBliss/frontend/cart.html");
+  res.sendFile(join(__dirname, "../frontend", "cart.html"));
 });
 //index.html
 app.get('/category-products/:categoryId', async (req, res) => {
@@ -400,55 +402,99 @@ app.post(
   })
 );
 passport.use(
-  new Strategy(async function verify(name, password, cb) {
+  new Strategy(async function verify(username, password, cb) {
     try {
-       const userRef = ref(database, `users/`);
-    const snapshot = await get(userRef);
+      const userRef = ref(database, `users/`);
+      const snapshot = await get(userRef);
 
-    if (snapshot.exists()) {
-      // If data exists, send it back as JSON
-      const user = snapshot.val();
-      let matchedUser=null;
-      for ( const key in user){
-        if(user[key].username===name){
-          matchedUser=user[key];
-           
+      if (!snapshot.exists()) return cb(null, false);
+
+      const users = snapshot.val();
+      let matchedUser = null;
+      let matchedKey = null;
+
+      for (const key in users) {
+        if (users[key].username === username) {
+          matchedUser = users[key];
+          matchedKey = key;
+          break;
         }
       }
-      if(!matchedUser){
-         return cb(null, false);
-      }
-      const storedHashedPassword = matchedUser.password;
-      bcrypt.compare(password, storedHashedPassword, (err, valid) => {
-          if (err) {
-            //Error with password check
-            console.error("Error comparing passwords:", err);
-            return cb(err);
-          } else {
-            if (valid) {
-              //Passed password check
-              return cb(null, user);
-            } else {
-              //Did not pass password check
-              return cb(null, false);
-            }
-          }
-        });
-      } else {
-        return cb("User not found");
-      }
-    }catch (err) {
-      console.log(err);
+
+      if (!matchedUser) return cb(null, false);
+
+      bcrypt.compare(password, matchedUser.password, (err, valid) => {
+        if (err) return cb(err);
+        if (!valid) return cb(null, false);
+
+        const finalUser = {
+          id: matchedKey,
+          username: matchedUser.username,
+          email: matchedUser.email,
+          phoneno: matchedUser.phoneno
+        };
+
+        return cb(null, finalUser);
+      });
+    } catch (err) {
+      return cb(err);
     }
   })
 );
 
-passport.serializeUser((user, cb) =>{
-  cb(null,user);
-});
-passport.deserializeUser((user, cb)=>{
+passport.serializeUser((user, cb) => {
   cb(null, user);
 });
+
+passport.deserializeUser((user, cb) => {
+  cb(null, user);
+});
+
+// Register Route
+app.post("/register", async (req, res) => {
+  const { user_name, phone_no, email, password } = req.body;
+  const hashedPassword = bcrypt.hashSync(password, 8);
+
+  const userRef = ref(database, `users/`);
+  const newUserRef = push(userRef);
+  const finalData = {
+    username: user_name,
+    phoneno: phone_no,
+    email: email,
+    password: hashedPassword,
+  };
+
+  try {
+    await set(newUserRef, finalData);
+    const user = {
+      id: newUserRef.key,
+      username: user_name,
+      phoneno: phone_no,
+      email: email,
+    };
+
+    req.login(user, (err) => {
+      if (err) {
+        console.error("Login error after registration:", err);
+        return res.redirect("/login");
+      }
+      console.log("Registration + login success");
+      return res.redirect("/");
+    });
+  } catch (err) {
+    console.error("Error in registration:", err);
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// Login Route
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    successRedirect: "/",
+    failureRedirect: "/login",
+  })
+);
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });

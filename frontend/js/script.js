@@ -38,7 +38,7 @@ b.forEach(button => {
 
     try {
       // Fetch data from the backend API
-      const response = await fetch(`https://selfbliss-2.onrender.com/category-products/${categoryId}`);
+      const response = await fetch(`https://selfbliss--4.onrender.com/category-products/${categoryId}`);
       
       if (response.ok) {
         const categoryProducts = await response.json();
@@ -74,7 +74,7 @@ b.forEach(button => {
     async function addToWishlist(productId) {
   
       try {
-        const response = await fetch("https://selfbliss-2.onrender.com/wishlist", {
+        const response = await fetch("https://selfbliss--4.onrender.com/wishlist", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -121,7 +121,7 @@ b.forEach(button => {
     async function addToCart(productId) {
  
       try {
-        const response = await fetch("https://selfbliss-2.onrender.com/cart", {
+        const response = await fetch("https://selfbliss--4.onrender.com/cart", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
