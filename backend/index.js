@@ -14,7 +14,7 @@ import cors from 'cors';
 const app = express();
 
 app.use(cors({
-  origin: 'https://selfbliss--5.onrender.com', // your frontend domain
+  origin: 'https://prathaagarwal.github.io/SelfBliss-ECommerce/', // your frontend domain
   credentials: true
 }));
 const port = 3000;
