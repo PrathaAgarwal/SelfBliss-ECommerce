@@ -14,7 +14,7 @@ import cors from 'cors';
 const app = express();
 
 app.use(cors({
-  origin: 'https://prathaagarwal.github.io/SelfBliss-ECommerce/', // your frontend domain
+  origin: ['https://prathaagarwal.github.io/SelfBliss-ECommerce/' ,'http://localhost:3000' ],
   credentials: true
 }));
 const port = 3000;
@@ -77,15 +77,12 @@ app.get('/category-products/:categoryId', async (req, res) => {
     console.log("index", categoryRef);
 
     if (snapshot.exists()) {
-      // If data exists, send it back as JSON
       const categoryProducts = snapshot.val();
       res.json(categoryProducts);
     } else {
-      // If no data exists for the category, return a 404 status
       res.status(404).json({ message: 'Category not found' });
     }
   } catch (error) {
-    // Handle any error that occurs
     res.status(500).json({ error: 'Error fetching data', message: error.message });
   }
 });
@@ -100,13 +97,9 @@ async function findCategoryIdByProductId(database, productId) {
   const productsData = snapshot.val();
 let foundCategoryId = null;
   for (const categoryId in productsData) {
-    console.log("------------------------------")
   const categoryProducts = productsData[categoryId];
-  console.log("category product", categoryProducts);
   for (const key in categoryProducts) {
-    console.log("key", key);
     const product = categoryProducts[key];
-    console.log(product);
     if (String(product.product_id) === String(productId)) {
       foundCategoryId = categoryId;
       return foundCategoryId;
@@ -116,7 +109,6 @@ let foundCategoryId = null;
   return null;
 }
 app.get('/allwishlist', async (req, res) => {
-  console.log("-------------------------------------------");
   if (!req.isAuthenticated()) {
     return res.status(401).json({ redirect: "/login" });
   }
@@ -124,39 +116,28 @@ app.get('/allwishlist', async (req, res) => {
   const uu = Object.keys(ui);
   const userId = uu[0];
   try {
-    // 1. Get all wishlist entries (only categoryId stored)
     const wishlistRef = ref(database, `users/${userId}/wishlist`);
     const wishlistSnap = await get(wishlistRef);
     if (!wishlistSnap.exists()) {
-      return res.status(200).json({ wishlist: [] }); // empty wishlist
+      return res.status(200).json({ wishlist: [] });
     }
-    const wishlistData = wishlistSnap.val(); // {productId: {categoryId}}
+    const wishlistData = wishlistSnap.val();
 console.log("wishlist data", wishlistData);
-    // 2. Get all products
     const productsRef = ref(database, 'products');
     const productsSnap = await get(productsRef);
     if (!productsSnap.exists()) {
       return res.status(500).json({ error: "Products not found in DB" });
     }
     const productsData = productsSnap.val();
-console.log("product data", productsData);
     const finalWishlist = [];
-
-    // 3. Loop over wishlist and find product details
     for (const productId in wishlistData) {
-      console.log("-------------------------------------------");
       const { categoryId } = wishlistData[productId];
-console.log("category id", categoryId);
       const categoryProducts = productsData[categoryId];
-      console.log("category product", categoryProducts);
       if (categoryProducts) {
         for (const key in categoryProducts) {
-          console.log("key",key);
           const product = categoryProducts[key];
-          console.log("product",product);
           if (String(product.product_id) === String(productId)) {
             finalWishlist.push(product);
-            console.log("final wihslisy", finalWishlist);
             break;
           }
         }
@@ -205,9 +186,7 @@ app.get('/allcart', async (req, res) => {
         }
       }
     }
-
     return res.status(200).json({ cart: finalCart });
-
   } catch (error) {
     console.error("Error loading cart:", error);
     return res.status(500).json({ error: "Failed to load cart" });
@@ -218,7 +197,6 @@ app.get('/allcart', async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ redirect: "/login" });
   }
-
   const ui = req.user;
   const uu = Object.keys(ui);
   const userId = uu[0];
@@ -253,8 +231,6 @@ app.delete('/cart/:productId', async (req, res) => {
     return res.status(500).json({ error: "Failed to delete from cart" });
   }
 });
-
-
 app.delete('/minuscart/:product_id', async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ redirect: "/login" });
@@ -262,12 +238,8 @@ app.delete('/minuscart/:product_id', async (req, res) => {
 
   const pid = req.params.product_id;
   const ui = req.user;
-  const uid = Object.keys(ui)[0]; // assuming your user ID extraction method
-
-  console.log("minus", pid, uid);
-
+  const uid = Object.keys(ui)[0]; 
   try {
-    // 1. Get current quantity
     const cartRef = ref(database, `users/${uid}/cart/${pid}`);
     const snapshot = await get(cartRef);
 
@@ -279,11 +251,9 @@ app.delete('/minuscart/:product_id', async (req, res) => {
     let currentQuantity = cartItem.quantity || 1;
 
     if (currentQuantity <= 1) {
-      // Remove product from cart if quantity is 1 or less
       await remove(cartRef);
       return res.json({ success: true, message: "Product removed from cart" });
     } else {
-      // Decrement quantity by 1
       const newQuantity = currentQuantity - 1;
       await update(cartRef, { quantity: newQuantity });
       return res.json({ success: true, message: "Product quantity decreased", quantity: newQuantity });
