@@ -34,12 +34,15 @@ console.log("Firebase config:", firebaseConfig);
 const a = initializeApp(firebaseConfig);
 const database = getDatabase(a);
 app.use(bodyParser.json());
+app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
-  secret:"gewqnbh",
+  secret: "gewqnbh",
   resave: false,
   saveUninitialized: true,
+  cookie: { secure: false } // important for local dev
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
