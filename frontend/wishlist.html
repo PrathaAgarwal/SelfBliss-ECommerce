@@ -34,7 +34,7 @@
   </div></div>
   <script> 
   document.addEventListener('DOMContentLoaded', () => {
-    fetch('https://selfbliss-ecommerce1.onrender.com//allwishlist')
+    fetch('https://selfbliss-ecommerce1.onrender.com/allwishlist')
     .then(response => {
       if (response.status === 401) {
           alert("You need to log in to access your wishlist.");
@@ -106,7 +106,7 @@
     });
     async function removeProduct(productId) {
   try {
-    const response = await fetch(`https://selfbliss-ecommerce1.onrender.com//wishlist/${productId}`, {
+    const response = await fetch(`https://selfbliss-ecommerce1.onrender.com/wishlist/${productId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
@@ -131,7 +131,7 @@
     async function addToCart(productId) {
  
       try {
-        const response = await fetch("https://selfbliss-ecommerce1.onrender.com//cart", {
+        const response = await fetch("https://selfbliss-ecommerce1.onrender.com/cart", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

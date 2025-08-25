@@ -54,7 +54,7 @@
   <script> 
     
   document.addEventListener('DOMContentLoaded', () => {
-    fetch("https://selfbliss-ecommerce1.onrender.com//allcart")
+    fetch("https://selfbliss-ecommerce1.onrender.com/allcart")
      .then(response => {
       if (response.status === 401) {
           alert("You need to log in to access your cart.");
@@ -116,7 +116,7 @@
   });
    async function removeProduct(productId) {
       try {
-        const response = await fetch(`https://selfbliss-ecommerce1.onrender.com//cart/${productId}`, {
+        const response = await fetch(`https://selfbliss-ecommerce1.onrender.com/cart/${productId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
@@ -137,7 +137,7 @@
 } 
 async function addToWishlist(proId) {
   try {
-    const response = await fetch("https://selfbliss-ecommerce1.onrender.com//wishlist", {
+    const response = await fetch("https://selfbliss-ecommerce1.onrender.com/wishlist", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -169,7 +169,7 @@ if (response.status===401){
 async function plusCart(proId) {
  try {
   console.log("Sending proId to backend:", proId);
-   const response = await fetch("https://selfbliss-ecommerce1.onrender.com//cart", {
+   const response = await fetch("https://selfbliss-ecommerce1.onrender.com/cart", {
      method: "POST",
      headers: {
        "Content-Type": "application/json",
@@ -191,7 +191,7 @@ async function plusCart(proId) {
  
   async function minusCart(proId){
   try{
-  const response = await fetch(`https://selfbliss-ecommerce1.onrender.com//minuscart/${proId}`, {
+  const response = await fetch(`https://selfbliss-ecommerce1.onrender.com/minuscart/${proId}`, {
   method: 'delete'
 });
 const data = await response.json();
