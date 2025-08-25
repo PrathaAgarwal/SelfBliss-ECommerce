@@ -36,35 +36,36 @@
 <div class="bl">
 <div class="login-form">
     <h3 class="pb-2 border-bottom">Buyer Login</h3>
-    <form action="/login" method="post" style="gap: 10px;">
-            <input type="text" name="username" id="login_email" placeholder="name">
-        <br>
-            <input type="password" name="password" id="login_password" placeholder="Password" >
+    <form action="/login" method="post">
+            <input class="mb-3" type="text" name="username" id="login_email" placeholder="name">
+        
+            <input class="mb-3" type="password" name="password" id="login_password" placeholder="Password" >
             <br>
-        <button type="submit" name="logins" >Login Now</button>
+        <button class="mb-3" type="submit" name="logins" >Login Now</button>
         <br>
-        <h5>New to SelfBliss?Create an account</h5>
+        <h5 class="mb-3">New to SelfBliss?<a href="#" onclick="toggleForms()">Create an account </a></h5>
     </form>
 </div></div>
 
 <div class="bre">
-<div class="register-form">
+<div class="register-form d-none">
     <h3>Buyer Registration</h3>
     <form action="/register" method="POST" id="agent_registration" >
-
-            <input type="text" id="company_name" name="user_name"  placeholder="User Name">
-        <br>
+            <input class="mb-3" type="text" id="company_name" name="user_name"  placeholder="User Name">
  
-            <input type="text" id="cmpny_email" name="email" placeholder="Email" >
-        <br>
-            <input type="password" id="agnt_password" name="password" placeholder="Password" >
-        <br>
-            <input type="password" id="agntRe_cpassword" placeholder="Repeat Password">
-        <br>
-            <input type="text" id="mobile_phone" name="phone_no" placeholder="Phone No" >
-    <br>
+            <input class="mb-3" type="text" id="cmpny_email" name="email" placeholder="Email" >
+            <input class="mb-3" type="password" id="agnt_password" name="password" placeholder="Password" >
+        
+            <input class="mb-3" type="password" id="agntRe_cpassword" placeholder="Repeat Password">
+        
+            <input class="mb-3" type="text" id="mobile_phone" name="phone_no" placeholder="Phone No" >
 
-        <button type="submit" name="submitr" >Register now</button>
+        <button class="mb-3" type="submit" name="submitr" >Register now</button>
+    <h5 class="mb-3">Already have an account? <a href="#" onclick="toggleBack()">Back to login</a></h5>
     </form>
 </div>
 </div>
+</div>
+<script src="/js/script.js"></script>
+</body>
+</html>

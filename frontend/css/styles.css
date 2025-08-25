@@ -7,6 +7,10 @@ h1 , h2 ,h3, h4{
     font-optical-sizing: auto;
     font-style: normal;
 }
+a{
+    text-decoration: none !important;
+    color: black !important;
+}
 span{
     font-family: "Macondo", serif;
     font-weight: 400;
@@ -34,12 +38,14 @@ span{
     width: 100%;
     margin-bottom: 20px;
     height: auto;
+    background-color: #000000;
 }
 .slide{
     position: absolute;
     opacity:0;
     width:100%;
     object-fit: cover; 
+    
 }
 .slidetext{
     position: absolute;
@@ -51,7 +57,33 @@ span{
 .slide:first-child{
     opacity: 1;
 }
-
+.heroline{
+    position:absolute;
+    padding: 1%;
+    margin-top: 560px;
+    width: 100%;
+    overflow: hidden;
+}
+.herolinecontainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    gap:15vw;
+    animation: slide-left 10s linear infinite;
+}
+.herolinetext{
+    white-space: nowrap;
+}
+@keyframes slide-left {
+  from{
+    transform: translateX(-100%);
+  }
+  to{
+    transform: translateX(100%);
+  }
+    
+}
 .special{
     height: 370px;
     width:335px !important;
@@ -64,9 +96,9 @@ span{
     transition: transform 0.3s ease;
 }
 #featured-3 {
-    margin-top: 550px; /* Default margin */
+    margin-top: 610px; /* Default margin */
     position: relative; 
-    z-index: 1; /* Ensures it stays above background elements */
+    z-index: 1; 
 }
 
 /* Adjust for medium screens */
@@ -116,7 +148,11 @@ span{
     opacity:1;
     transform: translateY(0);
 }
-
+.categoryImg:hover{
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
 button{
     background-color: white;
     color:rgb(3, 72, 82);
@@ -128,8 +164,8 @@ button:hover{
     color:white;
 }
 .feature{
-    height: 255px;
-    width:250px !important;
+    height: 340px;
+    width:260px !important;
     border:2px solid black;
     justify-content: center !important;
     align-items: center !important;
@@ -142,6 +178,29 @@ button:hover{
     top:110%;
     left:40%;
 
+}
+container{
+    background-color: yellow;
+}
+.cartContainer{
+    background-color: black;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+.cart-items {
+flex:3
+}
+#payment {
+  flex: 1;
+  border: 1px solid #ccc;
+  padding: 20px;
+  max-width: 300px;
+  height: fit-content;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
 .SB{
     color: rgb(3, 72, 82);
@@ -193,13 +252,18 @@ li{
 .login-form{
     border:2px solid black;
     margin-right: 0.5px;
+    padding: 10%;
     width: 350px !important;
-    
+    background-color:#fffaf6 ;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 .register-form{
     border:2px solid black;
     margin-right: 0.5px;
+    padding: 10%;
     width: 350px !important;
+    background-color:#fffaf6 ;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 .front{
     z-index: 1;

@@ -34,8 +34,14 @@
   </div></div>
   <script> 
   document.addEventListener('DOMContentLoaded', () => {
-    fetch('https://selfbliss-ecommerce1.onrender.com/allwishlist')
-    .then(response => response.json()) 
+    fetch('http://localhost:3000/allwishlist')
+    .then(response => {
+      if (response.status === 401) {
+          alert("You need to log in to access your wishlist.");
+          return window.location.href = "/login";
+      }
+      return response.json();
+    })
     .then(response=>{
     const wishlistItems=response.wishlist;
       console.log("whishlist items in .html--------------------", wishlistItems);
@@ -69,8 +75,9 @@
               <div class="pro">
               <div class="front">
                <h4 class="fs-2 text-body-emphasis">${item.name}</h4>
-                <ul><li>Price: ${item.price}</li>
-                <li>Quantity: ${item.quantity}</li></ul></div>
+               <p>${item.description}</p>
+                <ul><li>Price: ${item.price}</li><ul></div>
+
                 <div class="back">
                   <button class="add-to-cart" data-id="${item.product_id}">
           add to cart
@@ -86,8 +93,9 @@
      }); 
      productsDiv.addEventListener('click', (e) => {
           if (e.target.classList.contains('remove-btn')) {
+            console.log("remove btn");
             const productId = e.target.getAttribute('data-product-id');
-            removeProduct(productId); // Call your removeProduct function here
+            removeProduct(productId); 
           }
           if(e.target.classList.contains('add-to-cart')){
             const productId = e.target.getAttribute('data-id');
@@ -98,7 +106,7 @@
     });
     async function removeProduct(productId) {
   try {
-    const response = await fetch(`https://selfbliss-ecommerce1.onrender.com/wishlist/${productId}`, {
+    const response = await fetch(`http://localhost:3000/wishlist/${productId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
@@ -109,6 +117,7 @@
 
     if (response.ok && data.success) {
       alert(data.message);
+     window.location.reload();
       // Remove the item from the page
       document.querySelector(`[data-product-id="${productId}"]`).closest('.wishlist-item').remove();
     } else {
@@ -122,7 +131,7 @@
     async function addToCart(productId) {
  
       try {
-        const response = await fetch("https://selfbliss-ecommerce1.onrender.com/cart", {
+        const response = await fetch("http://localhost:3000/cart", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

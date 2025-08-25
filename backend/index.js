@@ -11,16 +11,17 @@ import { fileURLToPath } from 'url';
 import path , { dirname, join } from 'path';  
 import cors from 'cors';
 
+// These two lines are needed to replicate __dirname in ES modules:
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const app = express();
 
 app.use(cors({
-  origin: 'https://prathaagarwal.github.io/SelfBliss-ECommerce/', // your frontend domain
+  origin: ['https://prathaagarwal.github.io/selfbliss-frontend/', 'http://localhost:5000'], // your frontend domain
   credentials: true
 }));
 const port = 3000;
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-app.use(express.static(join(__dirname, '../frontend')));
+app.use(express.static(path.join(__dirname, '../frontend')));
 const firebaseConfig = {
   authDomain: "selfbliss-e4cad.firebaseapp.com",
   databaseURL: "https://selfbliss-e4cad-default-rtdb.firebaseio.com",
@@ -30,7 +31,6 @@ const firebaseConfig = {
   appId: "1:997141981475:web:ff4bef09c3f77c0cfa8496",
   measurementId: "G-M8V2MZ6ZRQ"
 };
-console.log("Firebase config:", firebaseConfig);
 const a = initializeApp(firebaseConfig);
 const database = getDatabase(a);
 app.use(bodyParser.json());
@@ -53,7 +53,6 @@ app.get("/categories", (req, res) => {
   res.sendFile(join(__dirname, "../frontend", "categories.html"));
 });
 app.get("/wishlist", (req, res) => {
-  console.log("Wishlist route hit");
   if (!req.isAuthenticated || !req.isAuthenticated()) {
     console.log("User not authenticated — redirecting to /login");
     return res.redirect("/login");
@@ -74,24 +73,19 @@ app.get('/category-products/:categoryId', async (req, res) => {
   try {
     const categoryRef = ref(database, `products/${categoryId}`);
     const snapshot = await get(categoryRef);
-    console.log("index", categoryRef);
 
     if (snapshot.exists()) {
-      // If data exists, send it back as JSON
       const categoryProducts = snapshot.val();
       res.json(categoryProducts);
     } else {
-      // If no data exists for the category, return a 404 status
       res.status(404).json({ message: 'Category not found' });
     }
   } catch (error) {
-    // Handle any error that occurs
     res.status(500).json({ error: 'Error fetching data', message: error.message });
   }
 });
 //wishlist.html
 async function findCategoryIdByProductId(database, productId) {
-  console.log("function called");
   const productsRef = ref(database, 'products');
   const snapshot = await get(productsRef);
 
@@ -100,13 +94,9 @@ async function findCategoryIdByProductId(database, productId) {
   const productsData = snapshot.val();
 let foundCategoryId = null;
   for (const categoryId in productsData) {
-    console.log("------------------------------")
   const categoryProducts = productsData[categoryId];
-  console.log("category product", categoryProducts);
   for (const key in categoryProducts) {
-    console.log("key", key);
     const product = categoryProducts[key];
-    console.log(product);
     if (String(product.product_id) === String(productId)) {
       foundCategoryId = categoryId;
       return foundCategoryId;
@@ -116,47 +106,32 @@ let foundCategoryId = null;
   return null;
 }
 app.get('/allwishlist', async (req, res) => {
-  console.log("-------------------------------------------");
   if (!req.isAuthenticated()) {
     return res.status(401).json({ redirect: "/login" });
   }
-  const ui = req.user;
-  const uu = Object.keys(ui);
-  const userId = uu[0];
+  const userId = req.user.id;
   try {
-    // 1. Get all wishlist entries (only categoryId stored)
     const wishlistRef = ref(database, `users/${userId}/wishlist`);
     const wishlistSnap = await get(wishlistRef);
     if (!wishlistSnap.exists()) {
-      return res.status(200).json({ wishlist: [] }); // empty wishlist
+      return res.status(200).json({ wishlist: [] }); 
     }
-    const wishlistData = wishlistSnap.val(); // {productId: {categoryId}}
-console.log("wishlist data", wishlistData);
-    // 2. Get all products
+    const wishlistData = wishlistSnap.val(); 
     const productsRef = ref(database, 'products');
     const productsSnap = await get(productsRef);
     if (!productsSnap.exists()) {
       return res.status(500).json({ error: "Products not found in DB" });
     }
     const productsData = productsSnap.val();
-console.log("product data", productsData);
     const finalWishlist = [];
-
-    // 3. Loop over wishlist and find product details
     for (const productId in wishlistData) {
-      console.log("-------------------------------------------");
       const { categoryId } = wishlistData[productId];
-console.log("category id", categoryId);
       const categoryProducts = productsData[categoryId];
-      console.log("category product", categoryProducts);
       if (categoryProducts) {
         for (const key in categoryProducts) {
-          console.log("key",key);
           const product = categoryProducts[key];
-          console.log("product",product);
           if (String(product.product_id) === String(productId)) {
             finalWishlist.push(product);
-            console.log("final wihslisy", finalWishlist);
             break;
           }
         }
@@ -175,59 +150,60 @@ app.get('/allcart', async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ redirect: "/login" });
   }
-  const ui = req.user;
-  const uu = Object.keys(ui);
-  const userId = uu[0];
+
+  const userId = req.user.id;
+
   try {
+    // 1. Get user's cart
     const cartRef = ref(database, `users/${userId}/cart`);
     const cartSnap = await get(cartRef);
+
     if (!cartSnap.exists()) {
       return res.status(200).json({ cart: [] });
     }
-    const cartData = cartSnap.val(); // { productId: { categoryId, quantity } }
+    const cartData = cartSnap.val();
+
+    // 2. Get all products
     const productsRef = ref(database, 'products');
     const productsSnap = await get(productsRef);
     if (!productsSnap.exists()) {
       return res.status(500).json({ error: "Products not found in DB" });
     }
     const productsData = productsSnap.val();
-    const finalCart = [];
-    for (const productId in cartData) {
-      const { categoryId, quantity } = cartData[productId];
-      const categoryProducts = productsData[categoryId];
-      if (categoryProducts) {
-        for (const key in categoryProducts) {
-          const product = categoryProducts[key];
-          if (String(product.product_id) === String(productId)) {
-            finalCart.push({ ...product, quantity });
-            break;
-          }
-        }
+    const productMap = {};
+    for (const categoryObj of productsData) {
+      if (!categoryObj) continue; // skip <empty item>
+      for (const key in categoryObj) {
+        const product = categoryObj[key];
+        productMap[String(product.product_id)] = product;
       }
     }
-
+    const finalCart = [];
+    for (const productId in cartData) {
+      const { quantity } = cartData[productId];
+      if (productMap[productId]) {
+        finalCart.push({ ...productMap[productId], quantity });
+      }
+    }
+    console.log("Final Cart:", finalCart);
     return res.status(200).json({ cart: finalCart });
-
   } catch (error) {
     console.error("Error loading cart:", error);
     return res.status(500).json({ error: "Failed to load cart" });
   }
 });
 
+
  app.delete('/wishlist/:productId', async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ redirect: "/login" });
   }
-
-  const ui = req.user;
-  const uu = Object.keys(ui);
-  const userId = uu[0];
+  const userId = req.user.id;
   const productId = req.params.productId;
-
   try {
     const wishlistRef = ref(database, `users/${userId}/wishlist/${productId}`);
     await remove(wishlistRef);
-    return res.status(200).json({ message: "Product removed from wishlist" });
+    return res.status(200).json({success:true, message: "Product removed from wishlist" });
   } catch (error) {
     console.error("Error deleting from wishlist:", error);
     return res.status(500).json({ error: "Failed to delete from wishlist" });
@@ -238,52 +214,36 @@ app.delete('/cart/:productId', async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ redirect: "/login" });
   }
-
-  const ui = req.user;
-  const uu = Object.keys(ui);
-  const userId = uu[0];
+  const userId = req.user.id;
   const productId = req.params.productId;
-
   try {
     const cartRef = ref(database, `users/${userId}/cart/${productId}`);
     await remove(cartRef);
-    return res.status(200).json({ message: "Product removed from cart" });
+    return res.status(200).json({success:true, message: "Product removed from cart" });
   } catch (error) {
     console.error("Error deleting from cart:", error);
     return res.status(500).json({ error: "Failed to delete from cart" });
   }
 });
 
-
 app.delete('/minuscart/:product_id', async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ redirect: "/login" });
   }
-
   const pid = req.params.product_id;
-  const ui = req.user;
-  const uid = Object.keys(ui)[0]; // assuming your user ID extraction method
-
-  console.log("minus", pid, uid);
-
+  const uid = req.user.id;
   try {
-    // 1. Get current quantity
     const cartRef = ref(database, `users/${uid}/cart/${pid}`);
     const snapshot = await get(cartRef);
-
     if (!snapshot.exists()) {
       return res.status(404).json({ success: false, message: "Product not found in cart" });
     }
-
     const cartItem = snapshot.val();
     let currentQuantity = cartItem.quantity || 1;
-
     if (currentQuantity <= 1) {
-      // Remove product from cart if quantity is 1 or less
       await remove(cartRef);
       return res.json({ success: true, message: "Product removed from cart" });
     } else {
-      // Decrement quantity by 1
       const newQuantity = currentQuantity - 1;
       await update(cartRef, { quantity: newQuantity });
       return res.json({ success: true, message: "Product quantity decreased", quantity: newQuantity });
@@ -299,17 +259,12 @@ app.post('/wishlist', async (req, res) => {
     return res.status(401).json({ redirect: "/login" });
   }
   const { productId } = req.body;
-   const ui= req.user;
-  const uu=Object.keys(ui);
-  const userId=uu[0];
-console.log("pid and uisd", productId, userId);
+  const userId = req.user.id;
   if (!productId || !userId) {
     return res.status(400).json({ error: "Missing userId or productId" });
   }
-
   try {
     const categoryId = await findCategoryIdByProductId(database, productId);
-    console.log("cid", categoryId);
     if (!categoryId) {
       return res.status(404).json({ error: "Product not found" });
     }
@@ -329,41 +284,32 @@ console.log("pid and uisd", productId, userId);
   }
 });
 
-
 app.post('/cart', async (req, res) => {
+  console.log("Received request to add product to cart");
   if (!req.isAuthenticated()) {
     return res.status(401).json({ redirect: "/login" });
   }
-
   const { productId } = req.body;
-  const ui = req.user;
-  const uu = Object.keys(ui);
-  const userId = uu[0];
-
-  console.log("pid and uid", productId, userId);
-
+  const userId = req.user.id;
+  console.log("User ID:", userId);
   if (!productId || !userId) {
     return res.status(400).json({ error: "Missing userId or productId" });
   }
-
   try {
+    console.log("Adding product to cart:", productId, "for user:", userId);
     const categoryId = await findCategoryIdByProductId(database, productId);
-    console.log("cid", categoryId);
     if (!categoryId) {
       return res.status(404).json({ error: "Product not found" });
     }
-
     const productRef = ref(database, `users/${userId}/cart/${productId}`);
     const snapshot = await get(productRef);
-
     if (snapshot.exists()) {
-      // If product already in cart, increment quantity by 1
+      console.log("Product already exists in cart, updating quantity");
       const existingData = snapshot.val();
       const newQuantity = (existingData.quantity || 1) + 1;
       await update(productRef, { quantity: newQuantity });
-      return res.status(200).json({ message: "Product quantity updated in cart", quantity: newQuantity });
+      return res.status(200).json({ success: true, message: "Product quantity updated in cart", quantity: newQuantity });
     } else {
-      // Add product with quantity 1
       await set(productRef, { categoryId, quantity: 1 });
       return res.status(200).json({ message: "Product added to cart with quantity 1", categoryId });
     }
@@ -373,16 +319,13 @@ app.post('/cart', async (req, res) => {
   }
 });
 
-
 // User Registration (Sign Up)
 app.post('/register', async (req, res) => {
   const {user_name, phone_no, email, password } = req.body;
-  console.log(req.body);
   const hashedPassword = bcrypt.hashSync(password, 8);  // Hash password
   const userref=ref( database, `users/`);
   const newuserref=push(userref);
   const finalData={ username:user_name, phoneno:phone_no, email:email, password:hashedPassword};
-  console.log(finalData);
   try {
     await set(newuserref,finalData);
     const user={id:newuserref.key, username:user_name, phoneno: phone_no, email:email, password:hashedPassword};
@@ -406,13 +349,10 @@ passport.use(
     try {
       const userRef = ref(database, `users/`);
       const snapshot = await get(userRef);
-
       if (!snapshot.exists()) return cb(null, false);
-
       const users = snapshot.val();
       let matchedUser = null;
       let matchedKey = null;
-
       for (const key in users) {
         if (users[key].username === username) {
           matchedUser = users[key];
@@ -420,20 +360,16 @@ passport.use(
           break;
         }
       }
-
       if (!matchedUser) return cb(null, false);
-
-      bcrypt.compare(password, matchedUser.password, (err, valid) => {
+      bcrypt.compare(password, matchedUser.password, (err, valid) => {      
         if (err) return cb(err);
         if (!valid) return cb(null, false);
-
         const finalUser = {
           id: matchedKey,
-          username: matchedUser.username,
+          username: matchedUser.username, 
           email: matchedUser.email,
           phoneno: matchedUser.phoneno
         };
-
         return cb(null, finalUser);
       });
     } catch (err) {
@@ -454,7 +390,6 @@ passport.deserializeUser((user, cb) => {
 app.post("/register", async (req, res) => {
   const { user_name, phone_no, email, password } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 8);
-
   const userRef = ref(database, `users/`);
   const newUserRef = push(userRef);
   const finalData = {
@@ -463,7 +398,6 @@ app.post("/register", async (req, res) => {
     email: email,
     password: hashedPassword,
   };
-
   try {
     await set(newUserRef, finalData);
     const user = {
@@ -472,7 +406,6 @@ app.post("/register", async (req, res) => {
       phoneno: phone_no,
       email: email,
     };
-
     req.login(user, (err) => {
       if (err) {
         console.error("Login error after registration:", err);

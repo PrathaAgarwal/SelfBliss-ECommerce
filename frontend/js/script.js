@@ -1,6 +1,5 @@
 const slides = document.querySelectorAll(".slide"); 
 const tl = gsap.timeline({ repeat: -1 }); 
-
 slides.forEach((slide, index) => {
   tl.to(slide, {
     opacity: 1,
@@ -13,6 +12,22 @@ slides.forEach((slide, index) => {
     delay:1, 
   });
 });
+
+function toggleForms() {
+  console.log("Toggle Forms Function Called");
+  const loginForm = document.querySelector('.login-form');
+  const registerForm = document.querySelector('.register-form');
+  loginForm.classList.add('d-none');
+  registerForm.classList.remove('d-none');
+}
+function toggleBack() {
+  const loginForm = document.querySelector('.login-form');
+  const registerForm = document.querySelector('.register-form');
+
+    registerForm.classList.add('d-none');
+    loginForm.classList.remove('d-none');
+  
+}
 
 const but = document.querySelectorAll("button");
 but.forEach((b)=>{  
@@ -38,7 +53,7 @@ b.forEach(button => {
 
     try {
       // Fetch data from the backend API
-      const response = await fetch(`https://selfbliss-ecommerce1.onrender.com/category-products/${categoryId}`);
+      const response = await fetch(`http://localhost:3000/category-products/${categoryId}`);
       
       if (response.ok) {
         const categoryProducts = await response.json();
@@ -74,7 +89,7 @@ b.forEach(button => {
     async function addToWishlist(productId) {
   
       try {
-        const response = await fetch("https://selfbliss-ecommerce1.onrender.com/wishlist", {
+        const response = await fetch("http://localhost:3000/wishlist", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -121,7 +136,7 @@ b.forEach(button => {
     async function addToCart(productId) {
  
       try {
-        const response = await fetch("https://selfbliss-ecommerce1.onrender.com/cart", {
+        const response = await fetch("http://localhost:3000/cart", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
