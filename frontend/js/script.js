@@ -32,22 +32,14 @@ b.addEventListener("mouseover", function(){
 const b = document.querySelectorAll(".categories");
 b.forEach(button => {
   button.addEventListener('click', async function () {
-    console.log("button clicked");
     const categoryId = this.getAttribute('data-id');
-    console.log("Category ID:", categoryId);  // Debugging statement
 
     try {
-      // Fetch data from the backend API
-      const response = await fetch(`https://selfbliss-ecommerce1.onrender.com/category-products/${categoryId}`);
+      const response = await fetch(`http://localhost:5000/category-products/${categoryId}`);
       
       if (response.ok) {
         const categoryProducts = await response.json();
-        console.log(categoryProducts, "Category Products");
-
-        // Store the category data in localStorage
         localStorage.setItem("cat", JSON.stringify(categoryProducts));
-
-        // Redirect to the category page
         window.location.href = "/categories.html";
       } else {
         console.log("No data available for this category");
@@ -74,7 +66,7 @@ b.forEach(button => {
     async function addToWishlist(productId) {
   
       try {
-        const response = await fetch("https://selfbliss-ecommerce1.onrender.com/wishlist", {
+        const response = await fetch("http://localhost:5000/wishlist", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -121,7 +113,7 @@ b.forEach(button => {
     async function addToCart(productId) {
  
       try {
-        const response = await fetch("https://selfbliss-ecommerce1.onrender.com/cart", {
+        const response = await fetch("http://localhost:5000/cart", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
